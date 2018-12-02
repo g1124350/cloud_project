@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style> img {width: 100%;height: auto;}</style>
+    </head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <body>
+        <div class="w3-container w3-green">
+            <CENTER><H1><%=photo[0].title%></H1></CENTER>
+            <img src="data:<%=photo[0].mimetype%>;base64, <%=photo[0].image%>">
+            <CENTER><H1><%=photo[0].description%></H1></CENTER>
+        </div>
+    </body>
+</html>

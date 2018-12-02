@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>Restaurants</title>
+    </head>
+    <body>
+        <H2>Showing <%= restaurants.length %> document(s)</H2>
+        <ol>
+            <% for (i in restaurants) { %>
+                <li><a href=/display?_id=<%= restaurants[i]._id%>><%=restaurants[i].name%></a></li>
+            <% } %>
+        </ol>
+        <a href=/logout>Log-out</a>
+    </body>
+</html>
