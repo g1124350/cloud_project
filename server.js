@@ -1,4 +1,4 @@
-//var fs = require{'fs'};
+var fs = require('fs');
 var express = require('express');
 var app = express();
 var session = require('cookie-session');
@@ -102,7 +102,6 @@ app.get('/logout',function(req,res) {
 });
 
 app.post('/new', function(req, res){
-
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
 	var filename = files.filetoupload.path;
@@ -116,10 +115,12 @@ app.post('/new', function(req, res){
     	new_r['name'] = fields.name;
     	new_r['borough'] = fields.borough;
     	new_r['cuisine'] = fields.cuisine;
+      if (files.filetoupload.size > 0){
     	if (data) {
       	new_r['photo'] = new Buffer(data).toString('base64');
       	new_r['photo_mimetype'] = files.filetoupload.type;
     	}
+    }
     	new_r['address'] = {
       	street: fields.street,
       	building: fields.building,
@@ -130,14 +131,14 @@ app.post('/new', function(req, res){
       	user: fields.user,
       	score: fields.score
     	}];
-    	new_r['owner'] = req.session.userid;
+    	new_r['owner'] = req.session.username;
 
 
     	assert.equal(err, null);
     	console.log('Connected to MongoDB\n');
     	insertDocument(db, new_r, function (result) {
       	db.close();
-      	//req.session.userid = fields.userid;
+      	req.session.username = fields.userid;
     	});
   	});
 	});
@@ -233,20 +234,20 @@ app.get('/display', function(req,res) {
   });
 });
 
-app.get("/gmap", function(req,res) {
-  var parsedURL = url.parse(req.url,true);
-  var queryAsObject = parsedURL.query;
-  var criteria = {};
-  //criteria['lat'] = req.query.lat;
-	criteria['lon'] = req.query.lon;
-	res.render("map.ejs", {
-    //lat:criteria.lat,
-  	lon:criteria.lon,
-	});
-  console.log(lon);
-  //console.log(lon);
-	res.end();
-});
+// app.get("/gmap", function(req,res) {
+//   // var parsedURL = url.parse(req.url,true);
+//   // var queryAsObject = parsedURL.query;
+//   // var criteria = {};
+//   //criteria['lat'] = req.query.lat;
+// 	// criteria['lon'] = req.query.lon;
+// 	res.render("map.ejs", {
+//     //lat:criteria.lat,
+//   	// lon:criteria.lon,
+// 	});
+//   // console.log(lon);
+//   //console.log(lon);
+// 	res.end();
+// });
 
 app.get('/update',function(req,res){
 		if (req.session.authenticated == false){

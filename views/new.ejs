@@ -1,6 +1,7 @@
 <html>
 <body>
-	<form action="/new" method="post">
+	<form action="/new" method="post" enctype="multipart/form-data">
+		<!-- Id:<input type="text" name="restaurant_id" ><br><br> -->
 		Name:<input type="text" name="name" required><br><br>
 		Borough:<input type="text" name="borougk"><br><br>
 		Cusisine:<input type="text" name="cusisine"><br><br>
@@ -9,7 +10,7 @@
 		Zipcode:<input type="text" name="zipcode"><br><br>
 		GPS Coordinates (lon.):<input type="text" name="lon"><br><br>
 		GPS Coordinates (lat.):<input type="text" name="lat"><br><br>
-		Photo:<input type="file" name="photo"><br><br>
+		Photo:<input type="file" name="filetoupload"><br><br><br>
 		<!-- Owner:<input type="text" name="owner"><br><br> -->
 	<input type="submit" Value="create">
 	</form>
