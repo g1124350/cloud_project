@@ -115,12 +115,12 @@ app.post('/new', function(req, res){
     	new_r['name'] = fields.name;
     	new_r['borough'] = fields.borough;
     	new_r['cuisine'] = fields.cuisine;
-      if (files.filetoupload.size > 0){
+      // if (files.filetoupload.size > 0){
     	if (data) {
       	new_r['photo'] = new Buffer(data).toString('base64');
       	new_r['photo_mimetype'] = files.filetoupload.type;
     	}
-    }
+    // }
     	new_r['address'] = {
       	street: fields.street,
       	building: fields.building,
