@@ -260,7 +260,12 @@ app.get('/update',function(req,res){
 				db.collection('restaurantNew').findOne(criteria, function(err, result){
             db.close();
             console.log(result);
-            res.render('UpdateForm', {r:result});
+            if(req.session.username != result.owner){
+              res.end("you are not the owner");
+            }else{
+              res.render('UpdateForm', {r:result, userName:req.session.username});
+            }
+
         });
         });
       }
@@ -269,7 +274,9 @@ app.get('/update',function(req,res){
 app.post('/updatedRestaurant', function(req,res){
   var newValues = {};
   var criteria = {};
-	criteria['_id'] = req.body._id;
+	criteria['_id'] = req.query._id;
+  console.log("a="+criteria['_id']);
+  console.log(criteria);
   var name = req.body.restname;
 		  //var filename = files.filetoupload.path;
 
@@ -325,8 +332,9 @@ app.post('/updatedRestaurant', function(req,res){
 
 			updateRestaurant(db, criteria, newValues, function(result){
         console.log("Update name = " + criteria._id);
+        console.log(newValues);
 				db.close();
-        console.log(result);
+        // console.log(result);
         res.redirect('/list');
 		    });
 		  });

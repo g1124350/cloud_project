@@ -11,11 +11,13 @@
       <li>Zipcode:<%= r[i].address.zipcode%></li>
       <li>GPS Coordinates(lon.):<%= r[i].address.coord.lon%></li>
       <li>GPS Coordinates(lat.):<%= r[i].address.coord.lat%></li>
+      <li>owner:<%= r[i].owner%></li>
       <% } %>
       </ol>
+      <a href=/update?_id=<%= r[i]._id%>>edit</a>
       <!-- <p id="map"></p> -->
       <a href=/gmap?lat=<%= r[i].address.coord.lon%>&lon=<%= r[i].address.coord.lat%>>Google map</a>
-      <a href=/update?_id=<%= r[i]._id%>>edit</a>
+
       <!-- <script>
         function show() {
         displaymap = '<a href="/gmap?lon=<%=r[i].address.coord.lon%>&lat=<%=r[i].address.coord.lat%>">Google Map</a>';
