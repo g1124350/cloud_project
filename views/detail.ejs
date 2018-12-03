@@ -14,21 +14,7 @@
       <% } %>
       </ol>
       <!-- <p id="map"></p> -->
-      <div id="map"></div>
-      <script>
-        function initMap() {
-          var myLatLng = {lat:114.259861, lng: 22.296483};
-          var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 10
-            center: myLatLng
-          });
-          var marker = new google.maps.Marker({
-            position: myLatLng,
-            map: map,
-            title: 'Hello World!'
-          });
-        }
-      </script>
+      <a href=/gmap?lat=<%= r[i].address.coord.lon%>&lon=<%= r[i].address.coord.lat%>>edit</a>
       <a href=/update?_id=<%= r[i]._id%>>edit</a>
       <!-- <script>
         function show() {
