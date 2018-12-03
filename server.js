@@ -102,48 +102,92 @@ app.get('/logout',function(req,res) {
 });
 
 app.post('/new', function(req, res){
-	console.log("enter");
-	var form = new formidable.IncomingForm();
-	console.log("enter2");
-    form.parse(req, function (err, fields, files) {
-		console.log(fields);
-		//console.log(JSON.stringify(files));;
-		var filename = files.fileupload.path;
 
-		fs.readFile(filename, function(err,data) {
-			var new_restaurant = {};
-			new_restaurant['name'] = fields.name;
-			new_restaurant['borough'] = fields.borough;
-			new_restaurant['cusisine'] = fields.cusisine;
-			new_restaurant['street'] = fields.street;
-			new_restaurant['building'] = fields.building;
-			new_restaurant['zipcode'] = fields.zipcode;
-
-			if(fields.lon != null && fields.lat != null){
-				new_restaurant['lon'] = fields.lon;
-				new_restaurant['lat'] = fields.lat;
-				//new_restaurant['address'] = [fields.lon, fields.lat];
-			}
-
-			if (files.filetoupload.size > 0){
-				new_restaurant['photo'] = new Buffer(data).toString('base64');
-				new_restaurant['mimetype'] = files.filetoupload.type;
-			}
-
-			//new_restaurant['owner'] = req.session.user;
-			MongoClient.connect(mongourl, function(err, db){
-        console.log("Connected db")
-				assert.equal(null, err);
-				create(db, new_restaurant, function(){
-					db.close();
-				});
-			});
+  var form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+	var filename = files.filetoupload.path;
+	if (files.filetoupload.type) {
+  	var mimetype = files.filetoupload.type;
+	}
+	fs.readFile(filename, function (err, data) {
+  	MongoClient.connect(mongourl, function (err, db) {
+    	var new_r = {}; // document to be inserted
+    	// new_r['restaurant_id'] = fields.restaurant_id;
+    	new_r['name'] = fields.name;
+    	new_r['borough'] = fields.borough;
+    	new_r['cuisine'] = fields.cuisine;
+    	if (data) {
+      	new_r['photo'] = new Buffer(data).toString('base64');
+      	new_r['photo_mimetype'] = files.filetoupload.type;
+    	}
+    	new_r['address'] = {
+      	street: fields.street,
+      	building: fields.building,
+      	zipcode: fields.zipcode,
+      	coord: [fields.lat, fields.lon]
+    	};
+    	new_r['grades'] = [{
+      	user: fields.user,
+      	score: fields.score
+    	}];
+    	new_r['owner'] = req.session.userid;
 
 
-		});
+    	assert.equal(err, null);
+    	console.log('Connected to MongoDB\n');
+    	insertDocument(db, new_r, function (result) {
+      	db.close();
+      	//req.session.userid = fields.userid;
+    	});
+  	});
 	});
-
+	res.redirect('/list');
+	return;
+  });
 });
+
+// 	console.log("enter");
+// 	var form = new formidable.IncomingForm();
+// 	console.log("enter2");
+//     form.parse(req, function (err, fields, files) {
+// 		console.log(fields);
+// 		//console.log(JSON.stringify(files));;
+// 		var filename = files.filetoupload.path;
+//
+// 		fs.readFile(filename, function(err,data) {
+// 			var new_restaurant = {};
+// 			new_restaurant['name'] = fields.name;
+// 			new_restaurant['borough'] = fields.borough;
+// 			new_restaurant['cusisine'] = fields.cusisine;
+// 			new_restaurant['street'] = fields.street;
+// 			new_restaurant['building'] = fields.building;
+// 			new_restaurant['zipcode'] = fields.zipcode;
+//
+// 			if(fields.lon != null && fields.lat != null){
+// 				new_restaurant['lon'] = fields.lon;
+// 				new_restaurant['lat'] = fields.lat;
+// 				//new_restaurant['address'] = [fields.lon, fields.lat];
+// 			}
+//
+// 			if (files.filetoupload.size > 0){
+// 				new_restaurant['photo'] = new Buffer(data).toString('base64');
+// 				new_restaurant['mimetype'] = files.filetoupload.type;
+// 			}
+//
+// 			//new_restaurant['owner'] = req.session.user;
+// 			MongoClient.connect(mongourl, function(err, db){
+//         console.log("Connected db")
+// 				assert.equal(null, err);
+// 				create(db, new_restaurant, function(){
+// 					db.close();
+// 				});
+// 			});
+//
+//
+// 		});
+// 	});
+//
+// });
 
 app.get('/list',function(req,res) {
   MongoClient.connect(mongourl, function(err, db) {
@@ -271,7 +315,7 @@ app.post('/updatedRestaurant', function(req,res){
 			  res.set({"Content-Type":"text/plain"});
 			  res.status(500).end("MongoClient connect() failed!");
 			}
-      newValues['name'] = restname;
+      newValues['name'] = name;
 			// var update_r = {};
 			// update_r['name'] = name;
 			// update_r['borough'] = borough;
@@ -387,6 +431,15 @@ app.get('/api/restaurant/read/cuisine/:cuisine',function(req,res){
   });
   });
 });
+
+function insertDocument(db, r, callback) {
+  db.collection('restaurantNew').insertOne(r, function (err, result) {
+	assert.equal(err, null);
+	console.log("insert was successful!");
+	console.log(result);
+	callback(result);
+  });
+}
 
 function create(db, detail, callback){
 	db.collection('restaurantNew').insert(detail, function(){
