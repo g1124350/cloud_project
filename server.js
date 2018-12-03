@@ -275,6 +275,10 @@ app.post('/updatedRestaurant', function(req,res){
   var newValues = {};
   var criteria = {};
 	criteria['_id'] = req.body._id;
+  criteria['name'] = req.body.name;
+  if(req.session.username != criteria.ownerName){
+    res.end("you are not the owner");
+  }
   var name = req.body.restname;
 		  //var filename = files.filetoupload.path;
 

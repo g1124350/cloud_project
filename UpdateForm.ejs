@@ -1,0 +1,16 @@
+<html>
+  <h1>Update id:<%=r._id%></h1>
+     <form action="/updatedRestaurant" method="post">
+        id:<%= r._id%><input type="text" name="_id"><br>
+        Restaurant Name: <%= r.name%><input type="text" name="restname"><br>
+        Borough: <%= r.borough%><input type="text" name="borough"><br>
+        Cuisine: <%= r.cuisine%><input type="text" name="cuisine"><br>
+        Street: <%= r.street%><input type="text" name="street"><br>
+        Building: <%= r.building%><input type="text" name="building"><br>
+        Zipcode: <%= r.zipcode%><input type="text" name="zipcode"><br>
+        GPS Coordinates(lon.): <%= r.lon%><input type="text" name="gpscoordinateslon"><br>
+        GPS Coordinates(lat.): <%= r.lat%><input type="text" name="gpscoordinateslat"><br>
+        Owner name:<%= r.owner%><input type="text" name="ownerName"><br>
+        <input type="submit" value="Update"><br>
+     </form>
+</html>
