@@ -234,24 +234,23 @@ app.get('/display', function(req,res) {
   });
 });
 
-// app.get("/gmap", function(req,res) {
-//   // var parsedURL = url.parse(req.url,true);
-//   // var queryAsObject = parsedURL.query;
-//   // var criteria = {};
-//   //criteria['lat'] = req.query.lat;
-// 	// criteria['lon'] = req.query.lon;
-// 	res.render("map.ejs", {
-//     //lat:criteria.lat,
-//   	// lon:criteria.lon,
-// 	});
-//   // console.log(lon);
-//   //console.log(lon);
-// 	res.end();
-// });
+app.get("/gmap", function(req,res) {
+  // var parsedURL = url.parse(req.url,true);
+  // var queryAsObject = parsedURL.query;
+  // var criteria = {};
+// lat = req.query.lat;
+	// criteria['lon'] = req.query.lon;
+	res.render("map.ejs", {
+    lat:req.query.lat,
+  	lon:req.query.lon
+	});
+  // console.log(lon);
+  //console.log(lon);
+});
 
 app.get('/update',function(req,res){
 		if (req.session.authenticated == false){
-			req.end("You are not the owner");
+			req.end("You are not the owner!!!");
 		}else{
       MongoClient.connect(mongourl, function(err, db) {
         var parsedURL = url.parse(req.url,true); //true to get query as object
@@ -264,8 +263,15 @@ app.get('/update',function(req,res){
         console.log(criteria._id);
 				db.collection('restaurantNew').findOne(criteria, function(err, result){
             db.close();
-            console.log(result);
-            res.render('UpdateForm', {r:result});
+            //console.log(result);
+            if(req.session.username != result.owner){
+              console.log(result.owner);
+              console.log(req.session.username);
+              res.end("you are not the owner");
+            }else{
+              res.render('UpdateForm', {r:result,userName:req.session.username});
+            }
+
         });
         });
       }
@@ -276,9 +282,7 @@ app.post('/updatedRestaurant', function(req,res){
   var criteria = {};
 	criteria['_id'] = req.body._id;
   criteria['name'] = req.body.name;
-  if(req.session.username != criteria.ownerName){
-    res.end("you are not the owner");
-  }
+
   var name = req.body.restname;
 		  //var filename = files.filetoupload.path;
 
@@ -320,6 +324,7 @@ app.post('/updatedRestaurant', function(req,res){
 			  res.set({"Content-Type":"text/plain"});
 			  res.status(500).end("MongoClient connect() failed!");
 			}
+
       newValues['name'] = name;
 			// var update_r = {};
 			// update_r['name'] = name;
